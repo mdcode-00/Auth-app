@@ -16,15 +16,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = [
-  'https://auth-app-eight-gold.vercel.app', // frontend
+  'https://auth-app-eight-gold.vercel.app', // your frontend
   'http://localhost:5173'
 ]
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (e.g. curl, server-to-server)
     if (!origin) return callback(null, true)
-    if (allowedOrigins.includes(origin)) return callback(null, origin)
+    if (allowedOrigins.includes(origin)) return callback(null, true)
     return callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
@@ -32,10 +31,7 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-// ensure preflight responses are handled
 app.options('*', cors(corsOptions))
-
-// optional: ensure Vercel proxies are trusted so cookie handling works
 app.set('trust proxy', 1)
 
 app.use('/api/auth', authRouter)
