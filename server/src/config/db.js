@@ -1,17 +1,33 @@
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
-const dbConnect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URL);
-    console.log("MongoDB Connected");
-  } catch (error) {
-    console.log("MongoDB Error:", error);
-    process.exit(1);
-  }
+let cached = global._mongo; // Node global cache across lambdas
+if (!cached) {
+  cached = global._mongo = { conn: null, promise: null };
 }
 
-export default dbConnect;
+const dbConnect = async () => {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }).then((mongooseInstance) => {
+      console.log("MongoDB Connected");
+      return mongooseInstance;
+    }).catch((error) => {
+      console.log("MongoDB Error:", error);
+      throw error;
+    });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+};
+
+module.exports = dbConnect;
+
 

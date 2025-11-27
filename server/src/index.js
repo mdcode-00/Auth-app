@@ -27,10 +27,10 @@ app.use('/api/auth', authRouter)
 
 const PORT = process.env.PORT || 3000
 
-if (require.main === module) {
+if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}/api/auth`)
   })
 }
 
-module.exports = app
+export default app
