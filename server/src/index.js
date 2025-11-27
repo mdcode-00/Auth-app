@@ -10,12 +10,12 @@ dotenv.config();
 
 const app = express();
 
-dbConnect();
+await dbConnect();
 
 app.use(express.json());
 app.use(cookeiParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }))
 
