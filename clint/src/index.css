@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+
+@layer base {
+  html, body {
+    @apply m-0 p-0 overflow-x-hidden
+           bg-gradient-to-r from-teal-500 to-emerald-500 text-neutral-100
+           transition-colors duration-300
+           dark:bg-gray-900 dark:text-gray-200
+           dark:bg-none dark:from-transparent dark:to-transparent;
+  }
+}
+
+
+
+/* Hide scrollbar for Webkit (Chrome, Safari) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
