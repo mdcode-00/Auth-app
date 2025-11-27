@@ -68,11 +68,14 @@ web_modules/
 # dotenv environment variable files
 .env
 .env.*
+<<<<<<< HEAD
 server/.env
 clint/.env
 .env.local
 .DS_Store
 node_modules/
+=======
+>>>>>>> 48ca69f018f935b30653912988def7b041f5e288
 !.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
