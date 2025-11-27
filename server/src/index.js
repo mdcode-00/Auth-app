@@ -14,11 +14,26 @@ await dbConnect();
 
 app.use(express.json());
 app.use(cookeiParser());
-app.use(cors({
-  origin: "https://auth-app-eight-gold.vercel.app",
-  credentials: true
-}))
 
+const allowedOrigins = [
+  'https://auth-app-eight-gold.vercel.app', // your frontend
+  'http://localhost:5173'                    // local frontend
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // important for cookies
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("HELLO WORLD")
