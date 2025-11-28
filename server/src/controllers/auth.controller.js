@@ -102,20 +102,40 @@ export const LogOutController = async (req, res) => {
  * Refresh Token Controller
  */
 export const RefreshController = async (req, res) => {
-  const token = req.cookies.refresh_token;
-  if (!token) return res.status(401).json({ message: "No refresh token" });
+  const refreshToken = req.cookies.refresh_token;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token" });
+  }
 
   try {
-    const decode = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    // Verify refresh token
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    // genrateToken(res, decode.userId); // uncomment if you want to issue new tokens
+    // Create new access token (valid 10s)
+    const newAccessToken = jwt.sign(
+      { userId: decoded.userId },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "10s" }
+    );
 
-    res.status(200).json({
-      message: "token genrated",
-      userId: decode.userId,
+    // Set access token cookie (short expiry)
+    res.cookie("access_token", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 10 * 1000 // 10 seconds
     });
+
+    // Send userId back for your frontend
+    return res.status(200).json({
+      message: "Access token refreshed",
+      user: decoded.userId
+    });
+
   } catch (error) {
-    console.error("Error in token refreshing:", error);
-    res.status(401).json({ message: "Invalid or expired token" });
+    console.error("Error refreshing token:", error);
+    return res.status(401).json({ message: "Invalid or expired refresh token" });
   }
 };
+
