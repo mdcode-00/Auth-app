@@ -27,7 +27,7 @@ export const genrateToken = (res, userId) => {
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // true in production
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000
   })
 
@@ -37,7 +37,7 @@ export const genrateToken = (res, userId) => {
   res.cookie("access_token", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // true in production
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    sameSite: "none",
     maxAge: 1 * 1000
   })
 

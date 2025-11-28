@@ -15,24 +15,22 @@ await dbConnect();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = [
-  'https://auth-app-eight-gold.vercel.app', // your frontend
-  'http://localhost:5173'
-]
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true)
-    if (allowedOrigins.includes(origin)) return callback(null, true)
-    return callback(new Error('Not allowed by CORS'))
-  },
+app.use(cors({
+  origin: [
+    "https://auth-app-eight-gold.vercel.app",
+    "http://localhost:5173"
+  ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-}
+}))
 
-app.use(cors(corsOptions))
-app.options('*', cors(corsOptions))
-app.set('trust proxy', 1)
+// ✅ FIX 2: Manually handle preflight (important for Vercel)
+app.options('*', cors({
+  origin: [
+    "https://auth-app-eight-gold.vercel.app",
+    "http://localhost:5173"
+  ],
+  credentials: true,
+}))
 
 app.use('/api/auth', authRouter)
 
