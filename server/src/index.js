@@ -19,14 +19,16 @@ app.set('trust proxy', 1)
 
 // CORS: allow exact frontend origin(s) and credentials
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'https://auth-app-eight-gold.vercel.app',
+  process.env.CLIENT_URL, // keep if set
   'http://localhost:5173'
-]
+].filter(Boolean)
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true) // allow server-to-server or tools
-    if (allowedOrigins.includes(origin)) return callback(null, true)
+    if (!origin) return callback(null, true) // server-to-server / tools
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true)
+    }
     return callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
