@@ -1,21 +1,15 @@
-import serverless from 'serverless-http';
 import app from '../src/index.js';
 
-const handler = async (req, res) => {
-  // Handle CORS for Vercel serverless
+export default function handler(req, res) {
+  // CORS for Vercel
   res.setHeader("Access-Control-Allow-Origin", "https://auth-app-eight-gold.vercel.app");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
   if (req.method === "OPTIONS") {
-    res.statusCode = 200;
-    res.end();
-    return;
+    return res.status(200).end();
   }
 
-  const expressHandler = serverless(app);
-  return expressHandler(req, res);
-};
-
-export default handler;
+  return app(req, res);
+}
