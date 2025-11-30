@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 dotenv.config();
 
-let cached = global._mongo; // Node global cache across lambdas
+let cached = global._mongo;
+
 if (!cached) {
   cached = global._mongo = { conn: null, promise: null };
 }
@@ -16,10 +16,10 @@ const dbConnect = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }).then((mongooseInstance) => {
-      console.log("MongoDB Connected");
+      console.log('MongoDB Connected');
       return mongooseInstance;
     }).catch((error) => {
-      console.log("MongoDB Error:", error);
+      console.error('MongoDB Error:', error);
       throw error;
     });
   }
@@ -28,6 +28,4 @@ const dbConnect = async () => {
   return cached.conn;
 };
 
-module.exports = dbConnect;
-
-
+export default dbConnect;  // ✅ ES module export
