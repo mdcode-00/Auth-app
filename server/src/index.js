@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import authRouter from './routes/auth.route.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import serverless from 'serverless-http'
 
 dotenv.config();
 
@@ -59,4 +60,4 @@ if (process.env.NODE_ENV !== 'production') {
   })
 }
 
-export default app
+export const handler = serverless(app)
