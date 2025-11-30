@@ -55,7 +55,15 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRouter);
 
 // ✅ Connect to DB after CORS is set
-await dbConnect();
+app.use('/api/auth', async (req, res, next) => {
+  try {
+    await dbConnect(); // connect per invocation (cached)
+    authRouter(req, res, next); // pass request to router
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Local dev server
 if (process.env.NODE_ENV !== 'production') {
