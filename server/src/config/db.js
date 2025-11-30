@@ -1,31 +1,17 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+import mongoose from "mongoose";
 
-let cached = global._mongo;
-
-if (!cached) {
-  cached = global._mongo = { conn: null, promise: null };
-}
+let isConnected = false;
 
 const dbConnect = async () => {
-  if (cached.conn) return cached.conn;
+  if (isConnected) return;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }).then((mongooseInstance) => {
-      console.log('MongoDB Connected');
-      return mongooseInstance;
-    }).catch((error) => {
-      console.error('MongoDB Error:', error);
-      throw error;
-    });
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URL);
+    isConnected = conn.connections[0].readyState === 1;
+    console.log("MongoDB Connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
   }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
 };
 
-export default dbConnect;  // ✅ ES module export
+export default dbConnect;
