@@ -51,19 +51,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.use('/api/auth', authRouter);
-
-// ✅ Connect to DB after CORS is set
-app.use('/api/auth', async (req, res, next) => {
+app.use(async (req, res, next) => {
   try {
-    await dbConnect(); // connect per invocation (cached)
-    authRouter(req, res, next); // pass request to router
+    await dbConnect(); // uses cached connection if already connected
+    next();
   } catch (err) {
-    console.error(err);
+    console.error('DB connection error:', err);
     res.status(500).json({ error: 'Database connection failed' });
   }
 });
+
+// Routes
+app.use('/api/auth', authRouter);
+
+
 
 // Local dev server
 if (process.env.NODE_ENV !== 'production') {
